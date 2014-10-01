@@ -41,13 +41,13 @@ class MainApi(remote.Service):
         try:
             return STORED_PHRASES.items[request.id]
         except (IndexError, TypeError):
-            raise endpoints.NotFoundException('Phrase %s not found.' % (request.id,))
+            raise endpoints.NotFoundException('Phrase %s not found.' % request.id)
 
     @endpoints.method(message_types.VoidMessage, Phrase, path='phrases/authed', http_method='POST', name='main.authed')
     def phrases_authed(self, request):
         current_user = endpoints.get_current_user()
         email = current_user.email() if current_user is not None else 'Anonymous'
-        return Phrase(message='Hello, %s!' % (email,))
+        return Phrase(message='Hello, %s!' % email)
 
 
 APPLICATION = endpoints.api_server([MainApi])
