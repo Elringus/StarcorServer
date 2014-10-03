@@ -6,7 +6,7 @@ from google.appengine.ext import ndb
 class Player(ndb.Model):
     login = ndb.StringProperty(required=True)
     level = ndb.IntegerProperty(default=1)
-    exp = ndb.FloatProperty(default=0)
+    exp = ndb.FloatProperty(default=0.1)
 
 
 class MainHandler(webapp2.RequestHandler):
