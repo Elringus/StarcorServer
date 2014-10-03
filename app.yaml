@@ -5,8 +5,8 @@ api_version: 1
 threadsafe: yes
 
 handlers:
-- url: /_ah/spi/.*
-  script: main_api.APPLICATION
+#- url: /_ah/spi/.*
+#  script: main_api.APPLICATION
 - url: .*
   script: main.app
 
@@ -15,5 +15,5 @@ libraries:
   version: "2.5.2"
 - name: pycrypto
   version: latest
-- name: endpoints
-  version: 1.0
+#- name: endpoints
+#  version: 1.0
