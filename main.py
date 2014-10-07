@@ -4,15 +4,25 @@ from google.appengine.ext import ndb
 
 
 class Player(ndb.Model):
+    last_event_time = ndb.StringProperty()
+
+    # player profile
     login = ndb.StringProperty(required=True)
     level = ndb.IntegerProperty(default=1)
     exp = ndb.FloatProperty()
-    last_event_time = ndb.StringProperty()
     battle_rating = ndb.IntegerProperty()
+
+    # resources
     gold = ndb.IntegerProperty()
     metal = ndb.IntegerProperty()
     lumber = ndb.IntegerProperty()
     magick = ndb.IntegerProperty()
+
+    # ships
+    light_turret_ship_count = ndb.IntegerProperty()
+    light_turret_ship_level = ndb.IntegerProperty()
+    light_rocket_ship_count = ndb.IntegerProperty()
+    light_rocket_ship_level = ndb.IntegerProperty()
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -28,6 +38,20 @@ class Auth(webapp2.RequestHandler):
         self.response.out.write(data)
 
 
+class LastEventTime(webapp2.RequestHandler):
+    def get(self):
+        player = get_player(self.request)
+        data = json.dumps({'last_event_time': player.last_event_time})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = get_player(self.request)
+        player.last_event_time = str(json.loads(self.request.body)['last_event_time'])
+        player.put()
+
+
+#region PLAYER_PROFILE
 class Level(webapp2.RequestHandler):
     def get(self):
         player = get_player(self.request)
@@ -54,19 +78,6 @@ class Exp(webapp2.RequestHandler):
         player.put()
 
 
-class LastEventTime(webapp2.RequestHandler):
-    def get(self):
-        player = get_player(self.request)
-        data = json.dumps({'last_event_time': player.last_event_time})
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(data)
-
-    def post(self):
-        player = get_player(self.request)
-        player.last_event_time = str(json.loads(self.request.body)['last_event_time'])
-        player.put()
-
-
 class BattleRating(webapp2.RequestHandler):
     def get(self):
         player = get_player(self.request)
@@ -78,8 +89,10 @@ class BattleRating(webapp2.RequestHandler):
         player = get_player(self.request)
         player.battle_rating = int(json.loads(self.request.body)['battle_rating'])
         player.put()
+#endregion
 
 
+#region RESOURCES
 class Gold(webapp2.RequestHandler):
     def get(self):
         player = get_player(self.request)
@@ -130,6 +143,7 @@ class Magick(webapp2.RequestHandler):
         player = get_player(self.request)
         player.magick = int(json.loads(self.request.body)['magick'])
         player.put()
+#endregion
 
 
 def get_player(request):
