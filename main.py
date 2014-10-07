@@ -19,10 +19,7 @@ class Player(ndb.Model):
     magick = ndb.IntegerProperty()
 
     # ships
-    light_turret_ship_count = ndb.IntegerProperty()
-    light_turret_ship_level = ndb.IntegerProperty()
-    light_rocket_ship_count = ndb.IntegerProperty()
-    light_rocket_ship_level = ndb.IntegerProperty()
+    ships = ndb.JsonProperty()
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -146,18 +143,40 @@ class Magick(webapp2.RequestHandler):
 #endregion
 
 
+#region SHIPS
+class Ships(webapp2.RequestHandler):
+    def get(self):
+        player = get_player(self.request)
+        data = json.dumps(player.ships)
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = get_player(self.request)
+        player.ships = json.loads(self.request.body)
+        player.put()
+#endregion
+
+
 def get_player(request):
     return Player.query(Player.login == request.get('login')).get()
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/auth', Auth),
+    ('/last_event_time', LastEventTime),
+
+    # player profile
     ('/level', Level),
     ('/exp', Exp),
-    ('/last_event_time', LastEventTime),
     ('/battle_rating', BattleRating),
+
+    # resources
     ('/gold', Gold),
     ('/metal', Metal),
     ('/lumber', Lumber),
     ('/magick', Magick),
+
+    # ships
+    ('/ships', Ships),
 ], debug=True)
