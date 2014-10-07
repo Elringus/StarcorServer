@@ -9,6 +9,10 @@ class Player(ndb.Model):
     exp = ndb.FloatProperty()
     last_event_time = ndb.StringProperty()
     battle_rating = ndb.IntegerProperty()
+    gold = ndb.IntegerProperty()
+    metal = ndb.IntegerProperty()
+    lumber = ndb.IntegerProperty()
+    magick = ndb.IntegerProperty()
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -66,13 +70,65 @@ class LastEventTime(webapp2.RequestHandler):
 class BattleRating(webapp2.RequestHandler):
     def get(self):
         player = get_player(self.request)
-        data = json.dumps({'battle-rating': player.battle_rating})
+        data = json.dumps({'battle_rating': player.battle_rating})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
         player = get_player(self.request)
         player.battle_rating = int(json.loads(self.request.body)['battle_rating'])
+        player.put()
+
+
+class Gold(webapp2.RequestHandler):
+    def get(self):
+        player = get_player(self.request)
+        data = json.dumps({'gold': player.gold})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = get_player(self.request)
+        player.gold = int(json.loads(self.request.body)['gold'])
+        player.put()
+
+
+class Metal(webapp2.RequestHandler):
+    def get(self):
+        player = get_player(self.request)
+        data = json.dumps({'metal': player.metal})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = get_player(self.request)
+        player.metal = int(json.loads(self.request.body)['metal'])
+        player.put()
+
+
+class Lumber(webapp2.RequestHandler):
+    def get(self):
+        player = get_player(self.request)
+        data = json.dumps({'lumber': player.lumber})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = get_player(self.request)
+        player.lumber = int(json.loads(self.request.body)['lumber'])
+        player.put()
+
+
+class Magick(webapp2.RequestHandler):
+    def get(self):
+        player = get_player(self.request)
+        data = json.dumps({'magick': player.magick})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = get_player(self.request)
+        player.magick = int(json.loads(self.request.body)['magick'])
         player.put()
 
 
@@ -86,4 +142,8 @@ app = webapp2.WSGIApplication([
     ('/exp', Exp),
     ('/last_event_time', LastEventTime),
     ('/battle_rating', BattleRating),
+    ('/gold', Gold),
+    ('/metal', Metal),
+    ('/lumber', Lumber),
+    ('/magick', Magick),
 ], debug=True)
