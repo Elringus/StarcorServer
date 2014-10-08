@@ -21,6 +21,9 @@ class Player(ndb.Model):
     # ships
     ships = ndb.JsonProperty()
 
+    # buildings
+    buildings = ndb.JsonProperty()
+
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -158,6 +161,21 @@ class Ships(webapp2.RequestHandler):
 #endregion
 
 
+#region BUILDINGS
+class Buildings(webapp2.RequestHandler):
+    def get(self):
+        player = get_player(self.request)
+        data = json.dumps(player.buildings)
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = get_player(self.request)
+        player.buildings = json.loads(self.request.body)
+        player.put()
+#endregion
+
+
 def get_player(request):
     return Player.query(Player.login == request.get('login')).get()
 
@@ -179,4 +197,7 @@ app = webapp2.WSGIApplication([
 
     # ships
     ('/ships', Ships),
+
+    # buildings
+    ('/buildings', Buildings),
 ], debug=True)
