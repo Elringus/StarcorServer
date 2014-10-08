@@ -18,11 +18,25 @@ class Player(ndb.Model):
     lumber = ndb.IntegerProperty()
     magick = ndb.IntegerProperty()
 
-    # ships
-    ships = ndb.JsonProperty()
-
     # buildings
     buildings = ndb.JsonProperty()
+
+
+def get_player(request):
+    return Player.query(Player.login == request.get('login')).get()
+
+
+class Ship(ndb.Model):
+    type = ndb.IntegerProperty(required=True)
+    level = ndb.IntegerProperty(default=1)
+    count = ndb.IntegerProperty(default=0)
+
+
+def get_ship(request):
+    ship = Ship.query(ancestor=get_player(request).key).filter(Ship.type == int(request.get('type'))).get()
+    if ship is None:
+        ship = Ship(parent=get_player(request).key, type=int(request.get('type')))
+    return ship
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -147,17 +161,30 @@ class Magick(webapp2.RequestHandler):
 
 
 #region SHIPS
-class Ships(webapp2.RequestHandler):
+class ShipLevel(webapp2.RequestHandler):
     def get(self):
-        player = get_player(self.request)
-        data = json.dumps(player.ships)
+        ship = get_ship(self.request)
+        data = json.dumps({'ship_level': ship.level})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = get_player(self.request)
-        player.ships = json.loads(self.request.body)
-        player.put()
+        ship = get_ship(self.request)
+        ship.level = int(json.loads(self.request.body)['ship_level'])
+        ship.put()
+
+
+class ShipCount(webapp2.RequestHandler):
+    def get(self):
+        ship = get_ship(self.request)
+        data = json.dumps({'ship_count': ship.count})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        ship = get_ship(self.request)
+        ship.count = int(json.loads(self.request.body)['ship_count'])
+        ship.put()
 #endregion
 
 
@@ -176,9 +203,6 @@ class Buildings(webapp2.RequestHandler):
 #endregion
 
 
-def get_player(request):
-    return Player.query(Player.login == request.get('login')).get()
-
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/auth', Auth),
@@ -196,7 +220,8 @@ app = webapp2.WSGIApplication([
     ('/magick', Magick),
 
     # ships
-    ('/ships', Ships),
+    ('/ship_level', ShipLevel),
+    ('/ship_count', ShipCount),
 
     # buildings
     ('/buildings', Buildings),
