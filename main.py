@@ -193,6 +193,75 @@ class BuildingPosition(webapp2.RequestHandler):
 #endregion
 
 
+#region TOWERS
+class TowerType(webapp2.RequestHandler):
+    def get(self):
+        tower = model.get_tower(self.request)
+        data = json.dumps({'tower_type': tower.type})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        tower = model.get_tower(self.request)
+        tower.type = int(json.loads(self.request.body)['tower_type'])
+        tower.put()
+
+
+class TowerLevel(webapp2.RequestHandler):
+    def get(self):
+        tower = model.get_tower(self.request)
+        data = json.dumps({'tower_level': tower.level})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        tower = model.get_tower(self.request)
+        tower.level = int(json.loads(self.request.body)['tower_level'])
+        tower.put()
+
+
+class TowerPosition(webapp2.RequestHandler):
+    def get(self):
+        tower = model.get_tower(self.request)
+        data = json.dumps({'tower_position': tower.position})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        tower = model.get_tower(self.request)
+        tower.position = int(json.loads(self.request.body)['tower_position'])
+        tower.put()
+
+
+class TowerCurrentHP(webapp2.RequestHandler):
+    def get(self):
+        tower = model.get_tower(self.request)
+        data = json.dumps({'tower_current_hp': tower.current_hp})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        tower = model.get_tower(self.request)
+        tower.current_hp = float(json.loads(self.request.body)['tower_current_hp'])
+        tower.put()
+
+
+class AddTower(webapp2.RequestHandler):
+    def get(self):
+        model.add_tower(self.request)
+
+
+class RemoveTower(webapp2.RequestHandler):
+    def get(self):
+        model.remove_tower(self.request)
+
+
+class RemoveAllTowers(webapp2.RequestHandler):
+    def get(self):
+        model.remove_all_towers(self.request)
+#endregion
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/auth', Auth),
@@ -217,4 +286,13 @@ app = webapp2.WSGIApplication([
     ('/building_built', BuildingBuilt),
     ('/building_level', BuildingLevel),
     ('/building_position', BuildingPosition),
+
+    # towers
+    ('/tower_type', TowerType),
+    ('/tower_level', TowerLevel),
+    ('/tower_position', TowerPosition),
+    ('/tower_current_hp', TowerCurrentHP),
+    ('/add_tower', AddTower),
+    ('/remove_tower', RemoveTower),
+    ('/remove_all_towers', RemoveAllTowers),
 ], debug=True)

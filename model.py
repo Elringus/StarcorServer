@@ -46,3 +46,29 @@ def get_building(request):
     if building is None:
         building = Building(parent=get_player(request).key, type=int(request.get('type')))
     return building
+
+
+class Tower(ndb.Model):
+    type = ndb.IntegerProperty(required=True)
+    level = ndb.IntegerProperty(default=1)
+    position = ndb.IntegerProperty(default=0)
+    current_hp = ndb.FloatProperty(default=1)
+
+
+def get_tower(request):
+    return Tower.query(ancestor=get_player(request).key).filter(Tower.position == int(request.get('position'))).get()
+
+
+def add_tower(request):
+    if get_tower(request) is not None:
+        return
+    tower = Tower(parent=get_player(request).key, type=int(request.get('type')), position=int(request.get('position')))
+    tower.put()
+
+
+def remove_tower(request):
+    get_tower(request).key.delete()
+
+
+def remove_all_towers(request):
+    ndb.delete_multi(Tower.query(ancestor=get_player(request).key).fetch(keys_only=True))
