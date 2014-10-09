@@ -1,8 +1,9 @@
 from google.appengine.ext import ndb
+import datetime
 
 
 class Player(ndb.Model):
-    last_event_time = ndb.StringProperty()
+    last_event = ndb.DateTimeProperty(default=datetime.datetime.now())
 
     # player profile
     login = ndb.StringProperty(required=True)
@@ -19,6 +20,16 @@ class Player(ndb.Model):
 
 def get_player(request):
     return Player.query(Player.login == request.get('login')).get()
+
+
+def get_event_delta(request):
+    player = get_player(request)
+    now = datetime.datetime.now()
+    last = player.last_event
+    delta = (now - last).seconds
+    player.last_event = now
+    player.put()
+    return delta
 
 
 class Ship(ndb.Model):

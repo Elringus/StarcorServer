@@ -16,17 +16,11 @@ class Auth(webapp2.RequestHandler):
         self.response.out.write(data)
 
 
-class LastEventTime(webapp2.RequestHandler):
+class EventDelta(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
-        data = json.dumps({'last_event_time': player.last_event_time})
+        data = json.dumps({'event_delta': model.get_event_delta(self.request)})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
-
-    def post(self):
-        player = model.get_player(self.request)
-        player.last_event_time = str(json.loads(self.request.body)['last_event_time'])
-        player.put()
 
 
 #region PLAYER_PROFILE
@@ -265,7 +259,7 @@ class RemoveAllTowers(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/auth', Auth),
-    ('/last_event_time', LastEventTime),
+    ('/event_delta', EventDelta),
 
     # player profile
     ('/level', Level),
