@@ -2,6 +2,7 @@ from google.appengine.ext import ndb
 import datetime
 
 
+#region PLAYER
 class Player(ndb.Model):
     last_event = ndb.DateTimeProperty(default=datetime.datetime.now())
 
@@ -32,6 +33,40 @@ def get_event_delta(request):
     return delta
 
 
+def reset_state(request):
+    player = get_player(request)
+
+    player.level = 1
+    player.exp = 0
+    player.battle_rating = 0
+
+    player.gold = 500
+    player.metal = 100
+    player.lumber = 100
+    player.magick = 50
+
+    player.put()
+
+    remove_all_ships(request)
+    Ship(parent=player.key, type=0, count=15).put()
+    Ship(parent=player.key, type=1, count=10).put()
+
+    remove_all_buildings(request)
+    Building(parent=player.key, type=0, built=True, position=10).put()
+    Building(parent=player.key, type=1, built=True, position=15).put()
+    Building(parent=player.key, type=2, built=True, position=20).put()
+    for i in range(3, 16):
+        Building(parent=player.key, type=i).put()
+
+    remove_all_towers(request)
+    Tower(parent=player, type=0, position=11).put()
+    Tower(parent=player, type=0, position=12).put()
+    Tower(parent=player, type=0, position=13).put()
+    Tower(parent=player, type=1, position=25).put()
+#endregion
+
+
+#region SHIP
 class Ship(ndb.Model):
     type = ndb.IntegerProperty(required=True)
     level = ndb.IntegerProperty(default=1)
@@ -40,11 +75,26 @@ class Ship(ndb.Model):
 
 def get_ship(request):
     ship = Ship.query(ancestor=get_player(request).key).filter(Ship.type == int(request.get('type'))).get()
-    if ship is None:
-        ship = Ship(parent=get_player(request).key, type=int(request.get('type')))
     return ship
 
 
+def add_ship(request):
+    if get_ship(request) is not None:
+        return
+    ship = Ship(parent=get_player(request).key, type=int(request.get('type')))
+    ship.put()
+
+
+def remove_all_ships(request):
+    ndb.delete_multi(Ship.query(ancestor=get_player(request).key).fetch(keys_only=True))
+
+
+def get_all_ships(request):
+    return Ship.query(ancestor=get_player(request).key).fetch()
+#endregion
+
+
+#region BUILDING
 class Building(ndb.Model):
     type = ndb.IntegerProperty(required=True)
     built = ndb.BooleanProperty(default=False)
@@ -54,11 +104,26 @@ class Building(ndb.Model):
 
 def get_building(request):
     building = Building.query(ancestor=get_player(request).key).filter(Building.type == int(request.get('type'))).get()
-    if building is None:
-        building = Building(parent=get_player(request).key, type=int(request.get('type')))
     return building
 
 
+def add_building(request):
+    if get_building(request) is not None:
+        return
+    building = Building(parent=get_player(request).key, type=int(request.get('type')))
+    building.put()
+
+
+def remove_all_buildings(request):
+    ndb.delete_multi(Building.query(ancestor=get_player(request).key).fetch(keys_only=True))
+
+
+def get_all_buildings(request):
+    return Building.query(ancestor=get_player(request).key).fetch()
+#endregion
+
+
+#region TOWER
 class Tower(ndb.Model):
     type = ndb.IntegerProperty(required=True)
     level = ndb.IntegerProperty(default=1)
@@ -83,3 +148,8 @@ def remove_tower(request):
 
 def remove_all_towers(request):
     ndb.delete_multi(Tower.query(ancestor=get_player(request).key).fetch(keys_only=True))
+
+
+def get_all_towers(request):
+    return Tower.query(ancestor=get_player(request).key).fetch()
+#endregion

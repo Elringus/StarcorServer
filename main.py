@@ -1,6 +1,7 @@
 import webapp2
 import json
 import model
+import logging
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -21,6 +22,11 @@ class EventDelta(webapp2.RequestHandler):
         data = json.dumps({'event_delta': model.get_event_delta(self.request)})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
+
+
+class ResetState(webapp2.RequestHandler):
+    def get(self):
+        model.reset_state(self.request)
 
 
 #region PLAYER_PROFILE
@@ -143,6 +149,31 @@ class ShipCount(webapp2.RequestHandler):
         ship = model.get_ship(self.request)
         ship.count = int(json.loads(self.request.body)['ship_count'])
         ship.put()
+
+
+class AddShip(webapp2.RequestHandler):
+    def get(self):
+        model.add_ship(self.request)
+
+
+class RemoveAllShips(webapp2.RequestHandler):
+    def get(self):
+        model.remove_all_ships(self.request)
+
+
+class GetAllShips(webapp2.RequestHandler):
+    def get(self):
+        ships = model.get_all_ships(self.request)
+        data = '['
+        for (i, ship) in enumerate(ships):
+            data += '{'
+            data += '"Type": "%s",' % ship.type
+            data += '"Level": "%s",' % ship.level
+            data += '"Count": "%s"' % ship.count
+            data += '},'
+        data += ']'
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
 #endregion
 
 
@@ -184,6 +215,32 @@ class BuildingPosition(webapp2.RequestHandler):
         building = model.get_building(self.request)
         building.position = int(json.loads(self.request.body)['building_position'])
         building.put()
+
+
+class AddBuilding(webapp2.RequestHandler):
+    def get(self):
+        model.add_building(self.request)
+
+
+class RemoveAllBuildings(webapp2.RequestHandler):
+    def get(self):
+        model.remove_all_buildings(self.request)
+
+
+class GetAllBuildings(webapp2.RequestHandler):
+    def get(self):
+        buildings = model.get_all_buildings(self.request)
+        data = '['
+        for (i, building) in enumerate(buildings):
+            data += '{'
+            data += '"Type": "%s",' % building.type
+            data += '"Built": "%s",' % building.built
+            data += '"Level": "%s",' % building.level
+            data += '"Position": "%s"' % building.position
+            data += '},'
+        data += ']'
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
 #endregion
 
 
@@ -253,6 +310,22 @@ class RemoveTower(webapp2.RequestHandler):
 class RemoveAllTowers(webapp2.RequestHandler):
     def get(self):
         model.remove_all_towers(self.request)
+
+
+class GetAllTowers(webapp2.RequestHandler):
+    def get(self):
+        towers = model.get_all_towers(self.request)
+        data = '['
+        for (i, tower) in enumerate(towers):
+            data += '{'
+            data += '"Type": "%s",' % tower.type
+            data += '"Level": "%s",' % tower.level
+            data += '"Position": "%s",' % tower.position
+            data += '"CurrentHP": "%s",' % tower.current_hp
+            data += '},'
+        data += ']'
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
 #endregion
 
 
@@ -260,6 +333,7 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/auth', Auth),
     ('/event_delta', EventDelta),
+    ('/reset_state', ResetState),
 
     # player profile
     ('/level', Level),
@@ -275,11 +349,17 @@ app = webapp2.WSGIApplication([
     # ships
     ('/ship_level', ShipLevel),
     ('/ship_count', ShipCount),
+    ('/add_ship', AddShip),
+    ('/remove_all_ships', RemoveAllShips),
+    ('/get_all_ships', GetAllShips),
 
     # buildings
     ('/building_built', BuildingBuilt),
     ('/building_level', BuildingLevel),
     ('/building_position', BuildingPosition),
+    ('/add_building', AddBuilding),
+    ('/remove_all_buildings', RemoveAllBuildings),
+    ('/get_all_buildings', GetAllBuildings),
 
     # towers
     ('/tower_type', TowerType),
@@ -289,4 +369,5 @@ app = webapp2.WSGIApplication([
     ('/add_tower', AddTower),
     ('/remove_tower', RemoveTower),
     ('/remove_all_towers', RemoveAllTowers),
+    ('/get_all_towers', GetAllTowers),
 ], debug=True)
