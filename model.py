@@ -74,15 +74,13 @@ class Ship(ndb.Model):
 
 
 def get_ship(request):
-    ship = Ship.query(ancestor=get_player(request).key).filter(Ship.type == int(request.get('type'))).get()
-    return ship
+    return Ship.query(ancestor=get_player(request).key).filter(Ship.type == int(request.get('type'))).get()
 
 
 def add_ship(request):
     if get_ship(request) is not None:
         return
-    ship = Ship(parent=get_player(request).key, type=int(request.get('type')))
-    ship.put()
+    Ship(parent=get_player(request).key, type=int(request.get('type'))).put()
 
 
 def remove_all_ships(request):
@@ -103,15 +101,13 @@ class Building(ndb.Model):
 
 
 def get_building(request):
-    building = Building.query(ancestor=get_player(request).key).filter(Building.type == int(request.get('type'))).get()
-    return building
+    return Building.query(ancestor=get_player(request).key).filter(Building.type == int(request.get('type'))).get()
 
 
 def add_building(request):
     if get_building(request) is not None:
         return
-    building = Building(parent=get_player(request).key, type=int(request.get('type')))
-    building.put()
+    Building(parent=get_player(request).key, type=int(request.get('type'))).put()
 
 
 def remove_all_buildings(request):
@@ -138,8 +134,7 @@ def get_tower(request):
 def add_tower(request):
     if get_tower(request) is not None:
         return
-    tower = Tower(parent=get_player(request).key, type=int(request.get('type')), position=int(request.get('position')))
-    tower.put()
+    Tower(parent=get_player(request).key, type=int(request.get('type')), position=int(request.get('position'))).put()
 
 
 def remove_tower(request):
