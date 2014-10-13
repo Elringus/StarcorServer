@@ -121,6 +121,19 @@ class Magick(webapp2.RequestHandler):
         player = model.get_player(self.request)
         player.magick = int(json.loads(self.request.body)['magick'])
         player.put()
+
+
+class Platinum(webapp2.RequestHandler):
+    def get(self):
+        player = model.get_player(self.request)
+        data = json.dumps({'platinum': player.platinum})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = model.get_player(self.request)
+        player.platinum = int(json.loads(self.request.body)['platinum'])
+        player.put()
 #endregion
 
 
@@ -345,6 +358,7 @@ app = webapp2.WSGIApplication([
     ('/lumber', Lumber),
     ('/metal', Metal),
     ('/magick', Magick),
+    ('/platinum', Platinum),
 
     # ships
     ('/ship_level', ShipLevel),

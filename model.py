@@ -17,6 +17,7 @@ class Player(ndb.Model):
     lumber = ndb.IntegerProperty()
     metal = ndb.IntegerProperty()
     magick = ndb.IntegerProperty()
+    platinum = ndb.IntegerProperty()
 
 
 def get_player(request):
@@ -44,6 +45,7 @@ def reset_state(request):
     player.lumber = 100
     player.metal = 100
     player.magick = 50
+    player.platinum = 7
 
     player.put()
 
@@ -59,10 +61,10 @@ def reset_state(request):
         Building(parent=player.key, type=i).put()
 
     remove_all_towers(request)
-    Tower(parent=player, type=0, position=11).put()
-    Tower(parent=player, type=0, position=12).put()
-    Tower(parent=player, type=0, position=13).put()
-    Tower(parent=player, type=1, position=25).put()
+    Tower(parent=player.key, type=0, position=11).put()
+    Tower(parent=player.key, type=0, position=12).put()
+    Tower(parent=player.key, type=0, position=13).put()
+    Tower(parent=player.key, type=1, position=25).put()
 #endregion
 
 
