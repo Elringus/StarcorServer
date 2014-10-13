@@ -14,8 +14,8 @@ class Player(ndb.Model):
 
     # resources
     gold = ndb.IntegerProperty()
-    metal = ndb.IntegerProperty()
     lumber = ndb.IntegerProperty()
+    metal = ndb.IntegerProperty()
     magick = ndb.IntegerProperty()
 
 
@@ -41,8 +41,8 @@ def reset_state(request):
     player.battle_rating = 0
 
     player.gold = 500
-    player.metal = 100
     player.lumber = 100
+    player.metal = 100
     player.magick = 50
 
     player.put()

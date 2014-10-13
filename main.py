@@ -84,19 +84,6 @@ class Gold(webapp2.RequestHandler):
         player.put()
 
 
-class Metal(webapp2.RequestHandler):
-    def get(self):
-        player = model.get_player(self.request)
-        data = json.dumps({'metal': player.metal})
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(data)
-
-    def post(self):
-        player = model.get_player(self.request)
-        player.metal = int(json.loads(self.request.body)['metal'])
-        player.put()
-
-
 class Lumber(webapp2.RequestHandler):
     def get(self):
         player = model.get_player(self.request)
@@ -107,6 +94,19 @@ class Lumber(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request)
         player.lumber = int(json.loads(self.request.body)['lumber'])
+        player.put()
+
+
+class Metal(webapp2.RequestHandler):
+    def get(self):
+        player = model.get_player(self.request)
+        data = json.dumps({'metal': player.metal})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = model.get_player(self.request)
+        player.metal = int(json.loads(self.request.body)['metal'])
         player.put()
 
 
@@ -342,8 +342,8 @@ app = webapp2.WSGIApplication([
 
     # resources
     ('/gold', Gold),
-    ('/metal', Metal),
     ('/lumber', Lumber),
+    ('/metal', Metal),
     ('/magick', Magick),
 
     # ships
