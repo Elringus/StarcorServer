@@ -67,6 +67,19 @@ class BattleRating(webapp2.RequestHandler):
         player = model.get_player(self.request)
         player.battle_rating = int(json.loads(self.request.body)['battle_rating'])
         player.put()
+
+
+class ShieldTime(webapp2.RequestHandler):
+    def get(self):
+        player = model.get_player(self.request)
+        data = json.dumps({'shield_time': player.shield_time})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    def post(self):
+        player = model.get_player(self.request)
+        player.shield_time = float(json.loads(self.request.body)['shield_time'])
+        player.put()
 #endregion
 
 
@@ -352,6 +365,7 @@ app = webapp2.WSGIApplication([
     ('/level', Level),
     ('/exp', Exp),
     ('/battle_rating', BattleRating),
+    ('/shield_time', ShieldTime),
 
     # resources
     ('/gold', Gold),

@@ -11,6 +11,7 @@ class Player(ndb.Model):
     level = ndb.IntegerProperty(default=1)
     exp = ndb.FloatProperty()
     battle_rating = ndb.IntegerProperty()
+    shield_time = ndb.FloatProperty()
 
     # resources
     gold = ndb.IntegerProperty()
@@ -37,9 +38,12 @@ def get_event_delta(request):
 def reset_state(request):
     player = get_player(request)
 
+    player.last_event = datetime.datetime.now()
+
     player.level = 1
     player.exp = 0
     player.battle_rating = 0
+    player.shield_time = 600
 
     player.gold = 500
     player.lumber = 100
