@@ -58,9 +58,9 @@ def reset_state(request):
     Ship(parent=player.key, type=1, count=10).put()
 
     remove_all_buildings(request)
-    Building(parent=player.key, type=0, built=True, position=10).put()
-    Building(parent=player.key, type=1, built=True, position=15).put()
-    Building(parent=player.key, type=2, built=True, position=20).put()
+    Building(parent=player.key, type=0, built=True, position=33).put()
+    Building(parent=player.key, type=1, built=True, position=3).put()
+    Building(parent=player.key, type=2, built=True, position=2).put()
     for i in range(3, 16):
         Building(parent=player.key, type=i).put()
 
