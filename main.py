@@ -6,6 +6,7 @@ import logging
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
+        #model.Player(login="Elringus").put()
         self.response.write('Hello World, this is the starcor server!')
 
 
