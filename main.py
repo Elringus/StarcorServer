@@ -1,3 +1,4 @@
+# coding=utf-8
 import webapp2
 import json
 import model
@@ -6,7 +7,7 @@ import logging
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        #model.Player(login="Elringus").put()
+        #model.Player(login="Атаман Борис").put()
         self.response.write('Hello World, this is the starcor server!')
 
 
