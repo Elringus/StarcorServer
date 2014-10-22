@@ -45,11 +45,11 @@ def reset_state(request):
     player.battle_rating = 0
     player.shield_time = 600
 
-    player.gold = 500
-    player.lumber = 100
-    player.metal = 100
-    player.magick = 50
-    player.platinum = 7
+    player.gold = 9999
+    player.lumber = 9999
+    player.metal = 9999
+    player.magick = 9999
+    player.platinum = 9999
 
     player.put()
 
@@ -65,10 +65,10 @@ def reset_state(request):
         Building(parent=player.key, type=i).put()
 
     remove_all_towers(request)
-    Tower(parent=player.key, type=0, position=11).put()
-    Tower(parent=player.key, type=0, position=12).put()
-    Tower(parent=player.key, type=0, position=13).put()
-    Tower(parent=player.key, type=1, position=25).put()
+    # Tower(parent=player.key, type=0, position=1).put()
+    # Tower(parent=player.key, type=0, position=2).put()
+    # Tower(parent=player.key, type=0, position=3).put()
+    # Tower(parent=player.key, type=5, position=6).put()
 #endregion
 
 
