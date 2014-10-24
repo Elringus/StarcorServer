@@ -1,9 +1,12 @@
+import webapp2_extras.appengine.auth.models
+from webapp2_extras import security
 from google.appengine.ext import ndb
 import datetime
+import time
 
 
 #region PLAYER
-class Player(ndb.Model):
+class Player(webapp2_extras.appengine.auth.models.User):
     last_event = ndb.DateTimeProperty(default=datetime.datetime.now())
 
     # player profile
@@ -20,13 +23,27 @@ class Player(ndb.Model):
     magick = ndb.IntegerProperty()
     platinum = ndb.IntegerProperty()
 
+    def set_password(self, raw_password):
+        self.password = security.generate_password_hash(raw_password, length=12)
 
-def get_player(request):
-    return Player.query(Player.login == request.get('login')).get()
+    @classmethod
+    def get_by_auth_token(cls, user_id, token, subject='auth'):
+        token_key = cls.token_model.get_key(user_id, subject, token)
+        user_key = ndb.Key(cls, user_id)
+        valid_token, user = ndb.get_multi([token_key, user_key])
+        if valid_token and user:
+            timestamp = int(time.mktime(valid_token.created.timetuple()))
+            return user, timestamp
+
+        return None, None
+
+
+def get_player(login):
+    return Player.query(Player.login == login).get()
 
 
 def get_event_delta(request):
-    player = get_player(request)
+    player = get_player(request.get('login'))
     now = datetime.datetime.now()
     last = player.last_event
     delta = (now - last).seconds
@@ -36,7 +53,7 @@ def get_event_delta(request):
 
 
 def reset_state(request):
-    player = get_player(request)
+    player = get_player(request.get('login'))
 
     player.last_event = datetime.datetime.now()
 
@@ -80,21 +97,21 @@ class Ship(ndb.Model):
 
 
 def get_ship(request):
-    return Ship.query(ancestor=get_player(request).key).filter(Ship.type == int(request.get('type'))).get()
+    return Ship.query(ancestor=get_player(request.get('login')).key).filter(Ship.type == int(request.get('type'))).get()
 
 
 def add_ship(request):
     if get_ship(request) is not None:
         return
-    Ship(parent=get_player(request).key, type=int(request.get('type'))).put()
+    Ship(parent=get_player(request.get('login')).key, type=int(request.get('type'))).put()
 
 
 def remove_all_ships(request):
-    ndb.delete_multi(Ship.query(ancestor=get_player(request).key).fetch(keys_only=True))
+    ndb.delete_multi(Ship.query(ancestor=get_player(request.get('login')).key).fetch(keys_only=True))
 
 
 def get_all_ships(request):
-    return Ship.query(ancestor=get_player(request).key).fetch()
+    return Ship.query(ancestor=get_player(request.get('login')).key).fetch()
 #endregion
 
 
@@ -107,21 +124,21 @@ class Building(ndb.Model):
 
 
 def get_building(request):
-    return Building.query(ancestor=get_player(request).key).filter(Building.type == int(request.get('type'))).get()
+    return Building.query(ancestor=get_player(request.get('login')).key).filter(Building.type == int(request.get('type'))).get()
 
 
 def add_building(request):
     if get_building(request) is not None:
         return
-    Building(parent=get_player(request).key, type=int(request.get('type'))).put()
+    Building(parent=get_player(request.get('login')).key, type=int(request.get('type'))).put()
 
 
 def remove_all_buildings(request):
-    ndb.delete_multi(Building.query(ancestor=get_player(request).key).fetch(keys_only=True))
+    ndb.delete_multi(Building.query(ancestor=get_player(request.get('login')).key).fetch(keys_only=True))
 
 
 def get_all_buildings(request):
-    return Building.query(ancestor=get_player(request).key).fetch()
+    return Building.query(ancestor=get_player(request.get('login')).key).fetch()
 #endregion
 
 
@@ -134,13 +151,13 @@ class Tower(ndb.Model):
 
 
 def get_tower(request):
-    return Tower.query(ancestor=get_player(request).key).filter(Tower.position == int(request.get('position'))).get()
+    return Tower.query(ancestor=get_player(request.get('login')).key).filter(Tower.position == int(request.get('position'))).get()
 
 
 def add_tower(request):
     if get_tower(request) is not None:
         return
-    Tower(parent=get_player(request).key, type=int(request.get('type')), position=int(request.get('position'))).put()
+    Tower(parent=get_player(request.get('login')).key, type=int(request.get('type')), position=int(request.get('position'))).put()
 
 
 def remove_tower(request):
@@ -148,9 +165,9 @@ def remove_tower(request):
 
 
 def remove_all_towers(request):
-    ndb.delete_multi(Tower.query(ancestor=get_player(request).key).fetch(keys_only=True))
+    ndb.delete_multi(Tower.query(ancestor=get_player(request.get('login')).key).fetch(keys_only=True))
 
 
 def get_all_towers(request):
-    return Tower.query(ancestor=get_player(request).key).fetch()
+    return Tower.query(ancestor=get_player(request.get('login')).key).fetch()
 #endregion

@@ -1,4 +1,5 @@
 # coding=utf-8
+from webapp2_extras import config as webapp2_config
 import webapp2
 import json
 import model
@@ -13,7 +14,7 @@ class MainHandler(webapp2.RequestHandler):
 
 class Auth(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'auth': 'OK' if player is not None else 'FAIL'})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
@@ -34,52 +35,52 @@ class ResetState(webapp2.RequestHandler):
 #region PLAYER_PROFILE
 class Level(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'level': player.level})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.level = int(json.loads(self.request.body)['level'])
         player.put()
 
 
 class Exp(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'exp': player.exp})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.exp = float(json.loads(self.request.body)['exp'])
         player.put()
 
 
 class BattleRating(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'battle_rating': player.battle_rating})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.battle_rating = int(json.loads(self.request.body)['battle_rating'])
         player.put()
 
 
 class ShieldTime(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'shield_time': player.shield_time})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.shield_time = float(json.loads(self.request.body)['shield_time'])
         player.put()
 #endregion
@@ -88,65 +89,65 @@ class ShieldTime(webapp2.RequestHandler):
 #region RESOURCES
 class Gold(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'gold': player.gold})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.gold = int(json.loads(self.request.body)['gold'])
         player.put()
 
 
 class Lumber(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'lumber': player.lumber})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.lumber = int(json.loads(self.request.body)['lumber'])
         player.put()
 
 
 class Metal(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'metal': player.metal})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.metal = int(json.loads(self.request.body)['metal'])
         player.put()
 
 
 class Magick(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'magick': player.magick})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.magick = int(json.loads(self.request.body)['magick'])
         player.put()
 
 
 class Platinum(webapp2.RequestHandler):
     def get(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         data = json.dumps({'platinum': player.platinum})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
     def post(self):
-        player = model.get_player(self.request)
+        player = model.get_player(self.request.get('login'))
         player.platinum = int(json.loads(self.request.body)['platinum'])
         player.put()
 #endregion
@@ -401,3 +402,15 @@ app = webapp2.WSGIApplication([
     ('/remove_all_towers', RemoveAllTowers),
     ('/get_all_towers', GetAllTowers),
 ], debug=True)
+
+config = {
+    'webapp2_extras.auth': {
+        'user_model': 'models.Player',
+        'user_attributes': ['name']
+    },
+    'webapp2_extras.sessions': {
+        'secret_key': 'kg%n3@k9ih%m=o5l^53+p=6w@qg#l7w4_$3z+t0a#*zi+5'
+    }
+}
+
+app.config = webapp2_config.Config(config)
