@@ -1,34 +1,39 @@
 import logging
+import main
 import webapp2
 import json
 import model
 import random
 import string
-from webapp2_extras import auth
+from webapp2_extras import auth as wbauth
 from webapp2_extras import sessions
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
 
-def user_required(handler):
+def auth_required(handler):
     """
       Decorator that checks if there's a user associated with the current session.
       Will also fail if there's no session present.
     """
+
     def check_login(self, *args, **kwargs):
-        au = self.auth
+        au = wbauth.get_auth()
         if not au.get_user_by_session():
-            self.redirect(self.uri_for('login'), abort=True)
+            data = json.dumps({'auth': 'FAIL'})
+            self.response.headers['Content-Type'] = 'application/json'
+            self.response.out.write(data)
         else:
             return handler(self, *args, **kwargs)
+
     return check_login
 
 
-class BaseHandler(webapp2.RequestHandler):
+class AuthBase(webapp2.RequestHandler):
     @webapp2.cached_property
     def auth(self):
         """Shortcut to access the auth instance as a property."""
-        return auth.get_auth()
+        return wbauth.get_auth()
 
     @webapp2.cached_property
     def user_info(self):
@@ -81,7 +86,7 @@ class BaseHandler(webapp2.RequestHandler):
             self.session_store.save_sessions(self.response)
 
 
-class SignupHandler(BaseHandler):
+class Signup(AuthBase):
     def post(self):
         login = str(json.loads(self.request.body)['login'])
 
@@ -91,18 +96,21 @@ class SignupHandler(BaseHandler):
             self.response.out.write(data)
             return
 
+        unique_properties = ['login']
         random_password = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
-        self.user_model.create_user(login, random_password, verified=True)
+        self.user_model.create_user(login, unique_properties, login=login,
+                                    password_raw=random_password, verified=True)
 
-        data = json.dumps({'result': 'OK'}, {'password': random_password})
+        data = json.dumps({'result': 'OK', 'password': random_password})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
 
-class LoginHandler(BaseHandler):
+class Login(AuthBase):
     def post(self):
-        login = str(json.loads(self.request.body)['login'])
-        password = str(json.loads(self.request.body)['password'])
+        login = str(json.loads(self.request.body)[0]['login'])
+        password = str(json.loads(self.request.body)[1]['password'])
+        # logging.debug("login: " + login + " password: " + password)
         try:
             self.auth.get_user_by_password(login, password, remember=True, save_session=True)
             data = json.dumps({'result': 'OK'})
@@ -114,6 +122,7 @@ class LoginHandler(BaseHandler):
             self.response.out.write(data)
 
 
-class LogoutHandler(BaseHandler):
+class Logout(AuthBase):
+    @auth_required
     def get(self):
         self.auth.unset_session()

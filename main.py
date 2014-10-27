@@ -1,8 +1,8 @@
 # coding=utf-8
-from webapp2_extras import config as webapp2_config
 import webapp2
 import json
 import model
+import auth
 import logging
 
 
@@ -10,17 +10,18 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         #model.Player(login="Атаман Борис").put()
         self.response.write('Hello World, this is the starcor server!')
+        
 
-
-class Auth(webapp2.RequestHandler):
+class CheckAuth(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
-        player = model.get_player(self.request.get('login'))
-        data = json.dumps({'auth': 'OK' if player is not None else 'FAIL'})
+        data = json.dumps({'auth': 'OK'})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
 
 class EventDelta(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
         data = json.dumps({'event_delta': model.get_event_delta(self.request)})
         self.response.headers['Content-Type'] = 'application/json'
@@ -28,8 +29,12 @@ class EventDelta(webapp2.RequestHandler):
 
 
 class ResetState(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
         model.reset_state(self.request)
+        data = json.dumps({'State reset': 'OK'})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
 
 
 #region PLAYER_PROFILE
@@ -40,6 +45,7 @@ class Level(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.level = int(json.loads(self.request.body)['level'])
@@ -53,6 +59,7 @@ class Exp(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.exp = float(json.loads(self.request.body)['exp'])
@@ -66,6 +73,7 @@ class BattleRating(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.battle_rating = int(json.loads(self.request.body)['battle_rating'])
@@ -79,6 +87,7 @@ class ShieldTime(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.shield_time = float(json.loads(self.request.body)['shield_time'])
@@ -94,6 +103,7 @@ class Gold(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.gold = int(json.loads(self.request.body)['gold'])
@@ -107,6 +117,7 @@ class Lumber(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.lumber = int(json.loads(self.request.body)['lumber'])
@@ -120,6 +131,7 @@ class Metal(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.metal = int(json.loads(self.request.body)['metal'])
@@ -133,6 +145,7 @@ class Magick(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.magick = int(json.loads(self.request.body)['magick'])
@@ -146,6 +159,7 @@ class Platinum(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.platinum = int(json.loads(self.request.body)['platinum'])
@@ -161,6 +175,7 @@ class ShipLevel(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         ship = model.get_ship(self.request)
         ship.level = int(json.loads(self.request.body)['ship_level'])
@@ -174,6 +189,7 @@ class ShipCount(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         ship = model.get_ship(self.request)
         ship.count = int(json.loads(self.request.body)['ship_count'])
@@ -181,11 +197,15 @@ class ShipCount(webapp2.RequestHandler):
 
 
 class AddShip(webapp2.RequestHandler):
+
+    @auth.auth_required
     def get(self):
         model.add_ship(self.request)
 
 
 class RemoveAllShips(webapp2.RequestHandler):
+
+    @auth.auth_required
     def get(self):
         model.remove_all_ships(self.request)
 
@@ -214,6 +234,7 @@ class BuildingBuilt(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         building = model.get_building(self.request)
         building.built = json.loads(self.request.body)['building_built'] == 'True'
@@ -227,6 +248,7 @@ class BuildingLevel(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         building = model.get_building(self.request)
         building.level = int(json.loads(self.request.body)['building_level'])
@@ -240,6 +262,7 @@ class BuildingPosition(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         building = model.get_building(self.request)
         building.position = int(json.loads(self.request.body)['building_position'])
@@ -247,11 +270,13 @@ class BuildingPosition(webapp2.RequestHandler):
 
 
 class AddBuilding(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
         model.add_building(self.request)
 
 
 class RemoveAllBuildings(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
         model.remove_all_buildings(self.request)
 
@@ -281,6 +306,7 @@ class TowerType(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         tower = model.get_tower(self.request)
         tower.type = int(json.loads(self.request.body)['tower_type'])
@@ -294,6 +320,7 @@ class TowerLevel(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         tower = model.get_tower(self.request)
         tower.level = int(json.loads(self.request.body)['tower_level'])
@@ -307,6 +334,7 @@ class TowerPosition(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         tower = model.get_tower(self.request)
         tower.position = int(json.loads(self.request.body)['tower_position'])
@@ -320,6 +348,7 @@ class TowerCurrentHP(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
+    @auth.auth_required
     def post(self):
         tower = model.get_tower(self.request)
         tower.current_hp = float(json.loads(self.request.body)['tower_current_hp'])
@@ -327,16 +356,19 @@ class TowerCurrentHP(webapp2.RequestHandler):
 
 
 class AddTower(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
         model.add_tower(self.request)
 
 
 class RemoveTower(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
         model.remove_tower(self.request)
 
 
 class RemoveAllTowers(webapp2.RequestHandler):
+    @auth.auth_required
     def get(self):
         model.remove_all_towers(self.request)
 
@@ -358,11 +390,26 @@ class GetAllTowers(webapp2.RequestHandler):
 #endregion
 
 
+config = {
+    'webapp2_extras.auth': {
+        'user_model': 'model.Player',
+        'user_attributes': ['login']
+    },
+    'webapp2_extras.sessions': {
+        'secret_key': 'kg%n3@k9ih%m=o5l^53+p=6w@qg#l7w4_$3z+t0a#*zi+5'
+    }
+}
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/auth', Auth),
     ('/event_delta', EventDelta),
     ('/reset_state', ResetState),
+
+    # auth
+    ('/check_auth', CheckAuth),
+    ('/signup', auth.Signup),
+    ('/login', auth.Login),
+    ('/logout', auth.Logout),
 
     # player profile
     ('/level', Level),
@@ -401,16 +448,4 @@ app = webapp2.WSGIApplication([
     ('/remove_tower', RemoveTower),
     ('/remove_all_towers', RemoveAllTowers),
     ('/get_all_towers', GetAllTowers),
-], debug=True)
-
-config = {
-    'webapp2_extras.auth': {
-        'user_model': 'models.Player',
-        'user_attributes': ['name']
-    },
-    'webapp2_extras.sessions': {
-        'secret_key': 'kg%n3@k9ih%m=o5l^53+p=6w@qg#l7w4_$3z+t0a#*zi+5'
-    }
-}
-
-app.config = webapp2_config.Config(config)
+], debug=True, config=config)

@@ -3,6 +3,7 @@ from webapp2_extras import security
 from google.appengine.ext import ndb
 import datetime
 import time
+import logging
 
 
 #region PLAYER
