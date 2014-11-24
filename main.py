@@ -38,6 +38,51 @@ class ResetState(webapp2.RequestHandler):
 
 
 #region PLAYER_PROFILE
+class Player(webapp2.RequestHandler):
+    def get(self):
+        player = model.get_player(self.request.get('login'))
+        data = json.dumps({
+            'avatar_name': player.avatar_name,
+            'level': player.level,
+            'exp': player.exp,
+            'battle_rating': player.battle_rating,
+            'shield_time': player.shield_time,
+            'gold': player.gold,
+            'lumber': player.lumber,
+            'metal': player.metal,
+            'magick': player.magick,
+            'platinum': player.platinum
+        })
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+
+class AvatarName(webapp2.RequestHandler):
+    def get(self):
+        player = model.get_player(self.request.get('login'))
+        data = json.dumps({'avatar_name': player.avatar_name})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    @auth.auth_required
+    def post(self):
+        player = model.get_player(self.request.get('login'))
+        avatar_name = str(json.loads(self.request.body)['avatar_name'])
+
+        if model.get_player_by_avatar(avatar_name) is not None:
+            data = json.dumps({'result': 'Avatar name set fail: provided avatar name already exists.'})
+            self.response.headers['Content-Type'] = 'application/json'
+            self.response.out.write(data)
+            return
+
+        player.avatar_name = avatar_name
+        player.put()
+
+        data = json.dumps({'result': 'OK'})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+
 class Level(webapp2.RequestHandler):
     def get(self):
         player = model.get_player(self.request.get('login'))
@@ -412,6 +457,8 @@ app = webapp2.WSGIApplication([
     ('/logout', auth.Logout),
 
     # player profile
+    ('/player', Player),
+    ('/avatar_name', AvatarName),
     ('/level', Level),
     ('/exp', Exp),
     ('/battle_rating', BattleRating),

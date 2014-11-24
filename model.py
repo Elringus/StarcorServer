@@ -12,6 +12,7 @@ class Player(webapp2_extras.appengine.auth.models.User):
 
     # player profile
     login = ndb.StringProperty(required=True)
+    avatar_name = ndb.StringProperty(default='Avatar Name')
     level = ndb.IntegerProperty(default=1)
     exp = ndb.FloatProperty()
     battle_rating = ndb.IntegerProperty()
@@ -41,6 +42,10 @@ class Player(webapp2_extras.appengine.auth.models.User):
 
 def get_player(login):
     return Player.query(Player.login == login).get()
+
+
+def get_player_by_avatar(avatar):
+    return Player.query(Player.avatar_name == avatar).get()
 
 
 def get_event_delta(request):

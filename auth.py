@@ -88,20 +88,21 @@ class AuthBase(webapp2.RequestHandler):
 
 class Signup(AuthBase):
     def post(self):
-        login = str(json.loads(self.request.body)['login'])
+        # login = str(json.loads(self.request.body)['login'])
 
-        if model.get_player(login) is not None:
-            data = json.dumps({'result': 'Signup fail: provided login already exists.'})
-            self.response.headers['Content-Type'] = 'application/json'
-            self.response.out.write(data)
-            return
+        # if model.get_player(login) is not None:
+        #     data = json.dumps({'result': 'Signup fail: provided login already exists.'})
+        #     self.response.headers['Content-Type'] = 'application/json'
+        #     self.response.out.write(data)
+        #     return
 
         unique_properties = ['login']
+        random_login = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
         random_password = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(32)])
-        self.user_model.create_user(login, unique_properties, login=login,
+        self.user_model.create_user(random_login, unique_properties, login=random_login,
                                     password_raw=random_password, verified=True)
 
-        data = json.dumps({'result': 'OK', 'password': random_password})
+        data = json.dumps({'result': 'OK', 'login': random_login, 'password': random_password})
         self.response.headers['Content-Type'] = 'application/json'
         self.response.out.write(data)
 
