@@ -76,7 +76,7 @@ class AvatarName(webapp2.RequestHandler):
             return
 
         player.avatar_name = avatar_name
-        player.put()
+        player.put().get()
 
         data = json.dumps({'result': 'OK'})
         self.response.headers['Content-Type'] = 'application/json'
@@ -94,7 +94,7 @@ class Level(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.level = int(json.loads(self.request.body)['level'])
-        player.put()
+        player.put().get()
 
 
 class Exp(webapp2.RequestHandler):
@@ -108,7 +108,7 @@ class Exp(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.exp = float(json.loads(self.request.body)['exp'])
-        player.put()
+        player.put().get()
 
 
 class BattleRating(webapp2.RequestHandler):
@@ -122,7 +122,7 @@ class BattleRating(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.battle_rating = int(json.loads(self.request.body)['battle_rating'])
-        player.put()
+        player.put().get()
 
 
 class ShieldTime(webapp2.RequestHandler):
@@ -136,7 +136,7 @@ class ShieldTime(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.shield_time = float(json.loads(self.request.body)['shield_time'])
-        player.put()
+        player.put().get()
 #endregion
 
 
@@ -152,7 +152,7 @@ class Gold(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.gold = int(json.loads(self.request.body)['gold'])
-        player.put()
+        player.put().get()
 
 
 class Lumber(webapp2.RequestHandler):
@@ -166,7 +166,7 @@ class Lumber(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.lumber = int(json.loads(self.request.body)['lumber'])
-        player.put()
+        player.put().get()
 
 
 class Metal(webapp2.RequestHandler):
@@ -180,7 +180,7 @@ class Metal(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.metal = int(json.loads(self.request.body)['metal'])
-        player.put()
+        player.put().get()
 
 
 class Magick(webapp2.RequestHandler):
@@ -194,7 +194,7 @@ class Magick(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.magick = int(json.loads(self.request.body)['magick'])
-        player.put()
+        player.put().get()
 
 
 class Platinum(webapp2.RequestHandler):
@@ -208,7 +208,7 @@ class Platinum(webapp2.RequestHandler):
     def post(self):
         player = model.get_player(self.request.get('login'))
         player.platinum = int(json.loads(self.request.body)['platinum'])
-        player.put()
+        player.put().get()
 #endregion
 
 
@@ -224,7 +224,7 @@ class ShipLevel(webapp2.RequestHandler):
     def post(self):
         ship = model.get_ship(self.request)
         ship.level = int(json.loads(self.request.body)['ship_level'])
-        ship.put()
+        ship.put().get()
 
 
 class ShipCount(webapp2.RequestHandler):
@@ -238,7 +238,7 @@ class ShipCount(webapp2.RequestHandler):
     def post(self):
         ship = model.get_ship(self.request)
         ship.count = int(json.loads(self.request.body)['ship_count'])
-        ship.put()
+        ship.put().get()
 
 
 class AddShip(webapp2.RequestHandler):
@@ -283,7 +283,7 @@ class BuildingBuilt(webapp2.RequestHandler):
     def post(self):
         building = model.get_building(self.request)
         building.built = json.loads(self.request.body)['building_built'] == 'True'
-        building.put()
+        building.put().get()
 
 
 class BuildingLevel(webapp2.RequestHandler):
@@ -297,7 +297,7 @@ class BuildingLevel(webapp2.RequestHandler):
     def post(self):
         building = model.get_building(self.request)
         building.level = int(json.loads(self.request.body)['building_level'])
-        building.put()
+        building.put().get()
 
 
 class BuildingPosition(webapp2.RequestHandler):
@@ -311,7 +311,7 @@ class BuildingPosition(webapp2.RequestHandler):
     def post(self):
         building = model.get_building(self.request)
         building.position = int(json.loads(self.request.body)['building_position'])
-        building.put()
+        building.put().get()
 
 
 class AddBuilding(webapp2.RequestHandler):
@@ -355,7 +355,7 @@ class TowerType(webapp2.RequestHandler):
     def post(self):
         tower = model.get_tower(self.request)
         tower.type = int(json.loads(self.request.body)['tower_type'])
-        tower.put()
+        tower.put().get()
 
 
 class TowerLevel(webapp2.RequestHandler):
@@ -369,7 +369,7 @@ class TowerLevel(webapp2.RequestHandler):
     def post(self):
         tower = model.get_tower(self.request)
         tower.level = int(json.loads(self.request.body)['tower_level'])
-        tower.put()
+        tower.put().get()
 
 
 class TowerPosition(webapp2.RequestHandler):
@@ -383,7 +383,7 @@ class TowerPosition(webapp2.RequestHandler):
     def post(self):
         tower = model.get_tower(self.request)
         tower.position = int(json.loads(self.request.body)['tower_position'])
-        tower.put()
+        tower.put().get()
 
 
 class TowerCurrentHP(webapp2.RequestHandler):
@@ -397,7 +397,7 @@ class TowerCurrentHP(webapp2.RequestHandler):
     def post(self):
         tower = model.get_tower(self.request)
         tower.current_hp = float(json.loads(self.request.body)['tower_current_hp'])
-        tower.put()
+        tower.put().get()
 
 
 class AddTower(webapp2.RequestHandler):
