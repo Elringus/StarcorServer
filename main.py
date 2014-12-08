@@ -358,6 +358,20 @@ class TowerType(webapp2.RequestHandler):
         tower.put().get()
 
 
+class TowerBuildingProgress(webapp2.RequestHandler):
+    def get(self):
+        tower = model.get_tower(self.request)
+        data = json.dumps({'tower_building_progress': tower.building_progress})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    @auth.auth_required
+    def post(self):
+        tower = model.get_tower(self.request)
+        tower.building_progress = float(json.loads(self.request.body)['tower_building_progress'])
+        tower.put().get()
+
+
 class TowerLevel(webapp2.RequestHandler):
     def get(self):
         tower = model.get_tower(self.request)
@@ -425,6 +439,7 @@ class GetAllTowers(webapp2.RequestHandler):
         for (i, tower) in enumerate(towers):
             data += '{'
             data += '"Type": "%s",' % tower.type
+            data += '"BuildingProgress": "%s",' % tower.building_progress
             data += '"Level": "%s",' % tower.level
             data += '"Position": "%s",' % tower.position
             data += '"CurrentHP": "%s",' % tower.current_hp
@@ -488,6 +503,7 @@ app = webapp2.WSGIApplication([
 
     # towers
     ('/tower_type', TowerType),
+    ('/tower_building_progress', TowerBuildingProgress),
     ('/tower_level', TowerLevel),
     ('/tower_position', TowerPosition),
     ('/tower_current_hp', TowerCurrentHP),

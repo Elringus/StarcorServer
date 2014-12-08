@@ -151,6 +151,7 @@ def get_all_buildings(request):
 #region TOWER
 class Tower(ndb.Model):
     type = ndb.IntegerProperty(required=True)
+    building_progress = ndb.FloatProperty(default=0)
     level = ndb.IntegerProperty(default=1)
     position = ndb.IntegerProperty(default=0)
     current_hp = ndb.FloatProperty(default=1)
