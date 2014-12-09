@@ -438,6 +438,7 @@ class GetAllTowers(webapp2.RequestHandler):
         data = '['
         for (i, tower) in enumerate(towers):
             data += '{'
+            data += '"ID": "%s",' % tower.id
             data += '"Type": "%s",' % tower.type
             data += '"BuildingProgress": "%s",' % tower.building_progress
             data += '"Level": "%s",' % tower.level

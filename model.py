@@ -150,6 +150,7 @@ def get_all_buildings(request):
 
 #region TOWER
 class Tower(ndb.Model):
+    id = ndb.IntegerProperty(default=0)
     type = ndb.IntegerProperty(required=True)
     building_progress = ndb.FloatProperty(default=0)
     level = ndb.IntegerProperty(default=1)
@@ -158,13 +159,16 @@ class Tower(ndb.Model):
 
 
 def get_tower(request):
-    return Tower.query(ancestor=get_player(request.get('login')).key).filter(Tower.position == int(request.get('position'))).get()
+    return Tower.query(ancestor=get_player(request.get('login')).key).filter(Tower.id == int(request.get('id'))).get()
 
 
 def add_tower(request):
     if get_tower(request) is not None:
         return
-    Tower(parent=get_player(request.get('login')).key, type=int(request.get('type')), position=int(request.get('position'))).put()
+    Tower(parent=get_player(request.get('login')).key,
+          id=int(request.get('id')),
+          type=int(request.get('type')),
+          position=int(request.get('position'))).put()
 
 
 def remove_tower(request):
