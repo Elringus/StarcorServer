@@ -414,6 +414,20 @@ class TowerCurrentHP(webapp2.RequestHandler):
         tower.put().get()
 
 
+class TowerChargesCount(webapp2.RequestHandler):
+    def get(self):
+        tower = model.get_tower(self.request)
+        data = json.dumps({'tower_charges_count': tower.charges_count})
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(data)
+
+    @auth.auth_required
+    def post(self):
+        tower = model.get_tower(self.request)
+        tower.charges_count = int(json.loads(self.request.body)['tower_charges_count'])
+        tower.put().get()
+
+
 class AddTower(webapp2.RequestHandler):
     @auth.auth_required
     def get(self):
@@ -508,6 +522,7 @@ app = webapp2.WSGIApplication([
     ('/tower_level', TowerLevel),
     ('/tower_position', TowerPosition),
     ('/tower_current_hp', TowerCurrentHP),
+    ('/tower_charges_count', TowerChargesCount),
     ('/add_tower', AddTower),
     ('/remove_tower', RemoveTower),
     ('/remove_all_towers', RemoveAllTowers),

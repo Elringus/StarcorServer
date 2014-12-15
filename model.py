@@ -156,6 +156,7 @@ class Tower(ndb.Model):
     level = ndb.IntegerProperty(default=1)
     position = ndb.IntegerProperty(default=0)
     current_hp = ndb.FloatProperty(default=1)
+    charges_count = ndb.IntegerProperty(default=0)
 
 
 def get_tower(request):
