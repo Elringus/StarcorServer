@@ -72,7 +72,7 @@ def reset_state(request):
     player.lumber = 9999
     player.metal = 9999
     player.magick = 9999
-    player.platinum = 9999
+    player.platinum = 10000000
 
     player.put()
 
